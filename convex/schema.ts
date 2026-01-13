@@ -10,4 +10,12 @@ export default defineSchema({
     })
     .index("by_updatedAt",["updatedAt"])
     .index("by_createdAt",["createdAt"])
+    ,
+    noteChunks : defineTable({
+        noteId : v.id("documents"),
+        text : v.string(),
+        createdAt : v.number(),
+    })
+    .index("by_note",["noteId"])
+    .index("by_createdAt",["createdAt"])
 })
