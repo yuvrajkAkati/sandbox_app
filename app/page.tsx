@@ -26,6 +26,9 @@ export default function Home() {
 
   const handleDelete = async (id: Id<"documents">) => {
     await deleteNote({ id });
+    setAiResults((prev) =>
+    prev ? prev.filter((note) => note._id !== id) : prev
+  );
   };
 
   const handleCreate = async () => {
