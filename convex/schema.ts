@@ -14,8 +14,13 @@ export default defineSchema({
     noteChunks : defineTable({
         noteId : v.id("documents"),
         text : v.string(),
+        embedding : v.array(v.number()),
         createdAt : v.number(),
     })
     .index("by_note",["noteId"])
     .index("by_createdAt",["createdAt"])
+    .vectorIndex("by_embedding", {
+  vectorField: "embedding",
+  dimensions: 768,
+})
 })

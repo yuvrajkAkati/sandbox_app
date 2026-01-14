@@ -8,6 +8,8 @@
  * @module
  */
 
+import type * as actions from "../actions.js";
+import type * as embeddings from "../embeddings.js";
 import type * as notes from "../notes.js";
 
 import type {
@@ -17,6 +19,8 @@ import type {
 } from "convex/server";
 
 declare const fullApi: ApiFromModules<{
+  actions: typeof actions;
+  embeddings: typeof embeddings;
   notes: typeof notes;
 }>;
 

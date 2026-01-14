@@ -2,9 +2,10 @@ import { v } from "convex/values";
 
 import {mutation,query} from "./_generated/server"
 import { Doc,Id } from "./_generated/dataModel";
+import { embedText } from "./embeddings";
 
 
-function chunkText(text: string): string[] {
+export function chunkText(text: string): string[] {
   return text
     .split(/[\n\.]/)
     .map((t) => t.trim())
@@ -28,15 +29,16 @@ export const createNote = mutation({
 
 
         //ai part
-        const chunks = chunkText(args.title);
-
-        for (const chunk of chunks) {
-        await ctx.db.insert("noteChunks", {
-            noteId : document,
-            text: chunk,
-            createdAt: Date.now(),
-        });
-        }
+        // const chunks = chunkText(args.title);
+        // for (const chunk of chunks) {
+        //     const embeddings = await embedText(chunk)
+        //     await ctx.db.insert("noteChunks", {
+        //         noteId : document,
+        //         text: chunk,
+        //         embedding : embeddings ,
+        //         createdAt: Date.now(),
+        //     });
+        // }
 
 
         return document
@@ -63,6 +65,16 @@ export const deleteNote = mutation({
         id: v.id("documents"),
     },
     async handler(ctx, args) {
+
+        const chunks = await ctx.db
+            .query("noteChunks")
+            .withIndex("by_note", (q) => q.eq("noteId", args.id))
+            .collect();
+
+        for (const chunk of chunks) {
+            await ctx.db.delete(chunk._id);
+        }
+
         await ctx.db.delete(args.id);
     },
 })
@@ -80,14 +92,16 @@ export const getAllNotes = query({
     },
 })
 
-export const getNoteById = query({
-    args : {
-        id : v.id("documents")
-    },
-    async handler(ctx, args) {
-        return await ctx.db.get(args.id);
-    },
-})
+export const getNotesByIds = query({
+  args: {
+    ids: v.array(v.id("documents")),
+  },
+  async handler(ctx, args) {
+    return await Promise.all(
+      args.ids.map((id) => ctx.db.get(id))
+    );
+  },
+});
 
 
 export const searchNotes = query({
@@ -112,3 +126,34 @@ export const searchNotes = query({
     );
   },
 });
+
+
+
+export const insertNoteChunk = mutation({
+  args: {
+    noteId: v.id("documents"),
+    text: v.string(),
+    embedding: v.array(v.number()),
+  },
+  async handler(ctx, args) {
+    await ctx.db.insert("noteChunks", {
+      noteId: args.noteId,
+      text: args.text,
+      embedding: args.embedding,
+      createdAt: Date.now(),
+    });
+  },
+});
+
+
+
+export const getChunksByIds = query({
+    args: {
+    ids: v.array(v.id("noteChunks")),
+  },
+  async handler(ctx, args) {
+    return await Promise.all(
+      args.ids.map((id) => ctx.db.get(id))
+    );
+  },
+})

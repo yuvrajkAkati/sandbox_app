@@ -4,7 +4,7 @@ import { deleteNote } from "@/convex/notes";
 import { useMutation, useQueries, useQuery } from "convex/react";
 import { useState } from "react";
 import { Id } from "@/convex/_generated/dataModel";
-
+import { useAction } from "convex/react";
 
 
 type CardProps = {
@@ -25,7 +25,7 @@ export default function Home() {
   const notes = useQuery(api.notes.getAllNotes)
   const createNote = useMutation(api.notes.createNote)
   const deleteNote = useMutation(api.notes.deleteNote);
-
+  const noteWithEmbeddings = useAction(api.actions.createNoteWithEmbeddings)
 
   const handleDelete = async (id: Id<"documents">) => {
     await deleteNote({ id });
@@ -33,7 +33,7 @@ export default function Home() {
   
   const handleCreate = async()=>{
     if(!title) return
-    const doc = await createNote({title,content})
+    const doc = await noteWithEmbeddings({title,content})
     if(doc) console.log("note created")
     setTitle("")
     setContent("")
