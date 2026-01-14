@@ -41,9 +41,9 @@ export default function Home() {
   );
 
   return (
-    <div className="min-h-screen bg-neutral-950 text-neutral-200 flex">
+    <div className="min-h-screen bg-neutral-950 text-neutral-200 ">
       {/* LEFT: CREATE */}
-      <div className="w-1/2 flex flex-col items-center justify-center gap-4 border-r border-neutral-800">
+      <div className="fixed left-0 top-0 h-screen w-1/2 flex flex-col items-center justify-center gap-4 border-r border-neutral-800 bg-neutral-950">
         <h2 className="text-xl font-semibold text-neutral-100">
           Create Note
         </h2>
@@ -73,7 +73,7 @@ export default function Home() {
       </div>
 
       {/* RIGHT: SEARCH */}
-      <div className="w-full flex justify-center p-10">
+      <div className="ml-[50%] w-1/2 h-screen overflow-y-auto flex justify-center p-10">
         <div className="w-full max-w-3xl">
           <h2 className="text-xl font-semibold mb-4 text-neutral-100">
             Search Notes
